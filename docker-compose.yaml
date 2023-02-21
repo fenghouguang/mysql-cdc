@@ -1,0 +1,42 @@
+## Require Docker Engine release 18.06.0+
+version: "3.7"
+networks: { default: { ipam: { config: [{ subnet: 192.168.61.0/24 }] } } }
+
+x-java-web-api: &java-web-api
+  image: openjdk:8u242-jdk-slim
+  restart: always
+  read_only: true
+  tmpfs: [/tmp]
+  user: root
+  working_dir: /home/mysql-cdc
+x-env: &env
+  IMSDOM_HOST_IPV4:
+  IMSDOM_MIDDLEWARE_IPV4:
+  BASE_WORKER_ID:
+
+services:
+  mysql-cdc:
+    <<: *java-web-api
+    environment:
+      <<: *env
+      WORKER_OFFSET_ID:
+    container_name: mysql-cdc
+    hostname: mysql-cdc
+    image: imsdom/golang-run:1.0.0
+    restart: always
+    read_only: true
+    user: root
+    working_dir: /home/mysql-cdc/cmd
+    volumes:
+      - ./etc/:/home/mysql-cdc/etc/
+      - ./cmd/main:/home/mysql-cdc/cmd/main
+      - ./log/:/home/mysql-cdc/log/
+      - ./db/:/home/mysql-cdc/db/
+    command: 
+      - sh 
+      - -c 
+      - |
+          /home/imsdom/mysql-cdc/cmd/main --conf=../etc/conf.yml
+    networks: { default: { ipv4_address: 192.168.61.230 } }
+  ##############################################################################
+
