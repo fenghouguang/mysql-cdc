@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/go-mysql-org/go-mysql/mysql"
 	"log"
 	"os"
 	"os/signal"
@@ -10,7 +11,6 @@ import (
 	"syscall"
 
 	"github.com/juju/errors"
-	"github.com/siddontang/go-mysql/mysql"
 
 	"go-mysql-cdc/global"
 	"go-mysql-cdc/service"

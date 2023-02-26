@@ -1,7 +1,7 @@
 package global
 
 import (
-	"github.com/siddontang/go-mysql/schema"
+	"github.com/go-mysql-org/go-mysql/schema"
 	"strings"
 	"sync"
 )

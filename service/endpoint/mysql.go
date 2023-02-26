@@ -2,12 +2,12 @@ package endpoint
 
 import (
 	"fmt"
+	"github.com/go-mysql-org/go-mysql/canal"
+	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/go-redis/redis"
 	"strings"
 	"sync"
 
-	"github.com/siddontang/go-mysql/canal"
-	"github.com/siddontang/go-mysql/mysql"
 	gormsql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
@@ -108,6 +108,7 @@ func (s *MysqlEndpoint) Stock(rows []*model.RowRequest) int64 {
 
 func (s *MysqlEndpoint) ruleRespond(row *model.RowRequest, rule *global.TableInfo) *model.MysqlRespond {
 	resp := new(model.MysqlRespond)
+	pk := rule.Columns[rule.PKColumns[0]]
 	kvm := rowMap(row, rule, false)
 	ruleKey := strings.Split(row.RuleKey, ":")
 	if len(ruleKey) > 1 {
@@ -115,11 +116,12 @@ func (s *MysqlEndpoint) ruleRespond(row *model.RowRequest, rule *global.TableInf
 		if row.Action == canal.InsertAction {
 			s.db.Table(table).Create(kvm)
 		} else if row.Action == canal.UpdateAction {
-			if s.db.Table(table).Where("id=?", kvm["id"]).Omit("id").Updates(kvm).RowsAffected == 0 {
+			w := fmt.Sprintf("%s=?", pk.Name)
+			if s.db.Table(table).Where(w, kvm[pk.Name]).Omit(pk.Name).Updates(kvm).RowsAffected == 0 {
 				s.db.Table(table).Create(kvm)
 			}
 		} else if row.Action == canal.DeleteAction {
-			s.db.Table(table).Delete(&struct{}{}, "id=?", kvm["id"])
+			s.db.Table(table).Delete(&struct{}{}, "?=?", pk.Name, kvm[pk.Name])
 		}
 	}
 	return resp
