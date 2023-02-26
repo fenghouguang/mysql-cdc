@@ -2,12 +2,12 @@ package endpoint
 
 import (
 	"fmt"
+	"github.com/go-mysql-org/go-mysql/canal"
+	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/go-redis/redis"
 	"strings"
 	"sync"
 
-	"github.com/siddontang/go-mysql/canal"
-	"github.com/siddontang/go-mysql/mysql"
 	gormsql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 

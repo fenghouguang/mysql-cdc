@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/siddontang/go-mysql/replication"
+	"github.com/go-mysql-org/go-mysql/replication"
 	"sync"
 )
 

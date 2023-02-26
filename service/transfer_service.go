@@ -2,14 +2,14 @@ package service
 
 import (
 	"fmt"
+	"github.com/go-mysql-org/go-mysql/canal"
+	"github.com/go-mysql-org/go-mysql/mysql"
 	"log"
 	"sync"
 	"time"
 
+	sc "github.com/go-mysql-org/go-mysql/schema"
 	"github.com/juju/errors"
-	"github.com/siddontang/go-mysql/canal"
-	"github.com/siddontang/go-mysql/mysql"
-	sc "github.com/siddontang/go-mysql/schema"
 	"go.uber.org/atomic"
 
 	"go-mysql-cdc/global"
