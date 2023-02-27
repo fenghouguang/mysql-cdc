@@ -72,6 +72,12 @@ type Config struct {
 	MysqlDatabase    string `yaml:"mysql_database"`
 	isReserveRawData bool   //保留原始数据
 	isMQ             bool   //是否消息队列
+	//
+	EnableExporter bool `yaml:"enable_exporter"` // 启用prometheus exporter，默认false
+	ExporterPort   int  `yaml:"exporter_addr"`   // prometheus exporter端口
+
+	EnableWebAdmin bool `yaml:"enable_web_admin"` // 启用Web监控，默认false
+	WebAdminPort   int  `yaml:"web_admin_port"`   // web监控端口,默认8060
 }
 
 func initConfig(fileName string) error {
