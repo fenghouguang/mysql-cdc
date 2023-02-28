@@ -59,6 +59,7 @@ func (s *MysqlEndpoint) Consume(from mysql.Position, rows []*model.RowRequest) e
 	//pipe := s.pipe()
 	for _, row := range rows {
 		if row.Action == "DDL" {
+			global.CanalStatus.DDLCount += 1
 			s.db.Exec(row.Sql)
 			continue
 		}
@@ -114,14 +115,20 @@ func (s *MysqlEndpoint) ruleRespond(row *model.RowRequest, rule *global.TableInf
 	if len(ruleKey) > 1 {
 		table := ruleKey[1]
 		if row.Action == canal.InsertAction {
+			global.CanalStatus.InsertCount += 1
 			s.db.Table(table).Create(kvm)
 		} else if row.Action == canal.UpdateAction {
 			w := fmt.Sprintf("%s=?", pk.Name)
 			if s.db.Table(table).Where(w, kvm[pk.Name]).Omit(pk.Name).Updates(kvm).RowsAffected == 0 {
 				s.db.Table(table).Create(kvm)
+				global.CanalStatus.InsertCount += 1
+			} else {
+				global.CanalStatus.UpdateCount += 1
 			}
 		} else if row.Action == canal.DeleteAction {
-			s.db.Table(table).Delete(&struct{}{}, "?=?", pk.Name, kvm[pk.Name])
+			w := fmt.Sprintf("%s=?", pk.Name)
+			s.db.Table(table).Delete(&struct{}{}, w, kvm[pk.Name])
+			global.CanalStatus.DeleteCount += 1
 		}
 	}
 	return resp

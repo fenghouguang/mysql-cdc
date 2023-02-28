@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-mysql-org/go-mysql/mysql"
+	"go-mysql-cdc/web"
 	"log"
 	"os"
 	"os/signal"
@@ -76,7 +77,10 @@ func main() {
 		println(errors.ErrorStack(err))
 		return
 	}
-
+	if err := web.Start(); err != nil {
+		println(errors.ErrorStack(err))
+		return
+	}
 	service.StartUp() // start application
 
 	s := make(chan os.Signal, 1)
